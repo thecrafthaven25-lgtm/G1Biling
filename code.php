@@ -13,20 +13,50 @@ if (isset($_POST['o_submit'])) {
 
 
     // Image Upload
-    $image = $_FILES['image']['name'];
-    $tmp = $_FILES['image']['tmp_name'];
-    $folder = "assets/img".$image;
+    if (!isset($_FILES['image'])) {
+      echo '<div class="alert alert-danger text-center fs-4" role="alert"> Image upload failed. Please choose an image again. </div>';
+      exit;
+    }
 
-   move_uploaded_file($tmp,$folder);
+    $imageFile = $_FILES['image'];
+    $imageNames = is_array($imageFile['name']) ? array_values(array_filter($imageFile['name'], 'strlen')) : [$imageFile['name']];
+
+    if (count($imageNames) !== 1) {
+      echo '<div class="alert alert-danger text-center fs-4" role="alert"> Please keep only one owner photo before submitting. </div>';
+      exit;
+    }
+
+    $imageErrors = is_array($imageFile['error']) ? $imageFile['error'] : [$imageFile['error']];
+    $imageTemps = is_array($imageFile['tmp_name']) ? $imageFile['tmp_name'] : [$imageFile['tmp_name']];
+
+    if (($imageErrors[0] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+      echo '<div class="alert alert-danger text-center fs-4" role="alert"> Image upload failed. Please choose an image again. </div>';
+      exit;
+    }
+
+    $image = preg_replace('/[^A-Za-z0-9._-]/', '_', basename($imageNames[0]));
+    $image = uniqid('owner_', true) . '_' . $image;
+    $tmp = $imageTemps[0];
+    $upload_dir = __DIR__ . "/assets/img/";
+    $folder = $upload_dir . $image;
+
+    if (!is_dir($upload_dir)) {
+      mkdir($upload_dir, 0777, true);
+    }
+
+    if (!move_uploaded_file($tmp, $folder)) {
+      echo '<div class="alert alert-danger text-center fs-4" role="alert"> Image could not be saved on server. Check the upload folder permissions. </div>';
+      exit;
+    }
 
 
 
 
 
 
-    $query = "INSERT INTO `users`(`name`, `mobile_1`, `mobile_2`, `address`, `img`, `user_name`, `pass`) 
-              VALUES ('$name','$mobile_1','$mobile_2','$address','$image','$user_name','$pass')";
-    $result = mysqli_query($conn, $query);
+        $query = "INSERT INTO `users`(`name`, `mobile_1`, `mobile_2`, `address`, `img`, `user_name`, `pass`) 
+          VALUES ('$name','$mobile_1','$mobile_2','$address','$image','$user_name','$pass')";
+        $result = mysqli_query($conn, $query);
 
 
 
@@ -51,10 +81,10 @@ if (isset($_POST['o_update'])) {
   $pass = $_POST['pass'];
 
 
-  $update_query = "UPDATE `users` SET `name`='$name', `mobile_1`='$mobile_1', `mobile_2`='$mobile_2', `address`='$address', `user_name`='$user_name', `pass`='$pass'
-         WHERE owner_id = '$owner_id'";
+    $update_query = "UPDATE `users` SET `name`='$name', `mobile_1`='$mobile_1', `mobile_2`='$mobile_2', `address`='$address', `user_name`='$user_name', `pass`='$pass'
+      WHERE owner_id = '$owner_id'";
 
-  $update_query_run = mysqli_query($conn, $update_query);
+    $update_query_run = mysqli_query($conn, $update_query);
 
   if ($update_query_run) {
     echo '<div class="alert alert-success text-center fs-4" role="alert"> Data Update Successfully </div>';
