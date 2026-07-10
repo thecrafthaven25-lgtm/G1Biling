@@ -1,0 +1,44 @@
+
+
+
+
+
+    .toggle-password {
+      position: absolute;
+      top: 50%;
+      right: 15px;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 18px;
+      color: #999;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background: #e52c58;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .login-btn:hover {
+      background: #ee5579;
+    }
+
+    .login-container p {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .login-container a {
+      color: #434445ff;
+      text-decoration: none;
+    }
+
+    .login-container a:hover {
+      text-decoration: underline;
+    }
