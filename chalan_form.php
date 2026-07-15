@@ -318,13 +318,21 @@ $today = date('Y-m-d');
                                 <div id="ChalanForm">
                                     <div class="design-row border p-3 mb-3 bg-light rounded position-relative">
                                         <div class="row">
-                                            <div class="col-md-3 col-12 mb-3">
-                                                <label class="form-label font-weight-bold">Design No</label>
-                                                <select class="form-select design-select" name="design_no[]" required>
-                                                    <option value="">-- Select Design No --</option>
+                                            <div class="col-md-2 col-12 mb-3">
+                                                <label class="form-label font-weight-bold">Card No</label>
+                                                <select class="form-select card-select" name="card_no[]" required>
+                                                    <option value="">-- Select Card No --</option>
                                                 </select>
                                             </div>
-                                            <div class="col-md-3 col-12 mb-3">
+                                            <div class="col-md-2 col-6 mb-3">
+                                                <label class="form-label font-weight-bold">Design No</label>
+                                                <input type="text" name="design_no[]" class="form-control design-no-val" readonly>
+                                            </div>
+                                            <div class="col-md-2 col-6 mb-3">
+                                                <label class="form-label font-weight-bold">Matching No</label>
+                                                <input type="text" name="matching_no[]" class="form-control design-matching-val" readonly>
+                                            </div>
+                                            <div class="col-md-2 col-12 mb-3">
                                                 <label class="form-label font-weight-bold">Cuts</label>
                                                 <div class="cuts-section border p-2 rounded bg-white" style="min-height: 38px;">
                                                     <div class="cuts-container d-flex flex-wrap gap-1 align-items-center mb-1">
@@ -333,16 +341,16 @@ $today = date('Y-m-d');
                                                 </div>
                                                 <input type="hidden" name="cut[]" class="design-cut-hidden">
                                             </div>
-                                            <div class="col-md-2 col-6 mb-3">
-                                                <label class="form-label">Total Metre</label>
+                                            <div class="col-md-1 col-6 mb-3">
+                                                <label class="form-label font-weight-bold">Total Metre</label>
                                                 <input type="text" name="total_metre[]" class="form-control design-metre" readonly>
                                             </div>
-                                            <div class="col-md-2 col-6 mb-3">
-                                                <label class="form-label">Rate</label>
-                                                <input type="text" name="rate[]" class="form-control design-rate" readonly>
+                                            <div class="col-md-1 col-6 mb-3">
+                                                <label class="form-label font-weight-bold">Rate</label>
+                                                <input type="text" name="rate[]" class="form-control design-rate">
                                             </div>
                                             <div class="col-md-2 col-6 mb-3">
-                                                <label class="form-label">Amount</label>
+                                                <label class="form-label font-weight-bold">Amount</label>
                                                 <input type="text" name="amount[]" class="form-control design-amount amount_1" readonly>
                                             </div>
                                         </div>

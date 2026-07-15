@@ -77,10 +77,8 @@ $id = $_GET['i_id'] ?? null;
                                     <th class="tm_width_3 tm_semi_bold tm_white_color">Description</th>
                                     <th class="tm_width_1 tm_semi_bold tm_white_color tm_text_center">Fabric</th>
                                     <th class="tm_width_1 tm_semi_bold tm_white_color tm_text_center">Matching No</th>
-                                    <th class="tm_width_1 tm_semi_bold tm_white_color tm_text_center">Cut (Mtr)</th>
-                                    <th class="tm_width_1 tm_semi_bold tm_white_color tm_text_center">Total Metre</th>
-                                    <th class="tm_width_1 tm_semi_bold tm_white_color tm_text_center">Rate</th>
-                                    <th class="tm_width_1 tm_semi_bold tm_white_color tm_text_center">Total Amount</th>
+                                    <th class="tm_width_2 tm_semi_bold tm_white_color tm_text_center">Cut (Mtr)</th>
+                                    <th class="tm_width_2 tm_semi_bold tm_white_color tm_text_center">Total Metre</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -90,9 +88,7 @@ $id = $_GET['i_id'] ?? null;
                                     <td class="tm_text_center tm_primary_color"><b><?php echo htmlspecialchars($row1['fabric']); ?></b></td>
                                     <td class="tm_text_center">-</td>
                                     <td class="tm_text_center">-</td>
-                                    <td class="tm_text_center tm_primary_color">₹ <?php echo htmlspecialchars($row1['total_metre']); ?></td>
-                                    <td class="tm_text_center tm_primary_color">₹ <?php echo htmlspecialchars($row1['rate']); ?></td>
-                                    <td class="tm_text_center tm_primary_color"><b>₹ <?php echo htmlspecialchars($row1['amount']); ?></b></td>
+                                    <td class="tm_text_center tm_primary_color"><?php echo htmlspecialchars($row1['total_metre']); ?></td>
                                 </tr>
                                 <?php
                                 $matching_no = explode(', ', $row1['matching_no']);
@@ -107,8 +103,6 @@ $id = $_GET['i_id'] ?? null;
                                     <td class="tm_text_center">-</td>
                                     <td class="tm_text_center"><?php echo htmlspecialchars($matching_no[$i] ?? ''); ?></td>
                                     <td class="tm_text_center"><?php echo htmlspecialchars($cut[$i] ?? ''); ?></td>
-                                    <td class="tm_text_center">-</td>
-                                    <td class="tm_text_center">-</td>
                                     <td class="tm_text_center">-</td>
                                 </tr>
                                 <?php } ?>
@@ -126,8 +120,8 @@ $id = $_GET['i_id'] ?? null;
                         <table class="tm_mb15">
                             <tbody>
                                 <tr class="tm_gray_bg">
-                                    <td class="tm_width_3 tm_primary_color tm_bold" style="color: #111 !important;">Total Amount:</td>
-                                    <td class="tm_width_3 tm_primary_color tm_bold tm_text_right" style="color: #111 !important;">₹ <?php echo htmlspecialchars($row1['amount']); ?></td>
+                                    <td class="tm_width_3 tm_primary_color tm_bold" style="color: #111 !important;">Total Metre:</td>
+                                    <td class="tm_width_3 tm_primary_color tm_bold tm_text_right" style="color: #111 !important;"><?php echo htmlspecialchars($row1['total_metre']); ?> Mtr</td>
                                 </tr>
                             </tbody>
                         </table>

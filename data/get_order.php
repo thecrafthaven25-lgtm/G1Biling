@@ -1,14 +1,12 @@
-<?php include "../db_con.php"?>
+<?php include "../db_con.php";
 
-<?php
+$card_no = $_POST['card_no'] ?? '';
+$card_no_escaped = mysqli_real_escape_string($conn, $card_no);
 
-$design_no = $_POST['design_no'];
+$result = $conn->query("SELECT * FROM orders WHERE card_no = '$card_no_escaped' LIMIT 1");
 
-$result = $conn->query("SELECT * FROM  orders where design_no = $design_no");
-
-$data = $result->fetch_assoc();
+$data = $result ? $result->fetch_assoc() : null;
 
 echo json_encode($data);
-
+$conn->close();
 ?>
-

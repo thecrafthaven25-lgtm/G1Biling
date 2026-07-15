@@ -258,8 +258,8 @@ if (isset($_POST['i_submit'])) {
   $total_metre = $_POST['total_metre'];
   $matching_no = implode(", ", $_POST['matching_no']);
   $total_matching = $_POST['total_matching'];
-  $rate = $_POST['rate'];
-  $total_amount = $_POST['amount'];
+  $rate = 0;
+  $amount = 0;
   $status = $_POST['status'];
 
   $query = "INSERT INTO `orders`(`date`, `order_no`, `party_id`, `p_name`, `card_no`, `design_no`, `details`, `fabric`, `cut`, `total_metre`, 
@@ -294,8 +294,8 @@ if (isset($_POST['i_update'])) {
   $total_metre = $_POST['total_metre'];
   $matching_no = implode(", ", $_POST['matching_no']);
   $total_matching = $_POST['total_matching'];
-  $rate = $_POST['rate'];
-  $amount = $_POST['amount'];
+  $rate = 0;
+  $amount = 0;
   $status = $_POST['status'];
 
   $update_query = "UPDATE `orders` SET `date`='$date', `order_no`='$order_no', `party_id`='$party_id', `p_name`='$p_name',
@@ -356,21 +356,27 @@ if (isset($_POST['c_submit'])) {
   $p_address = $_POST['p_address'];
   $order_no = $_POST['order_no'];
 
+  $card_no_arr = array_map('trim', $_POST['card_no'] ?? []);
   $design_no_arr = array_map('trim', $_POST['design_no'] ?? []);
+  $matching_no_arr = array_map('trim', $_POST['matching_no'] ?? []);
   $cut_arr = array_map('trim', $_POST['cut'] ?? []);
   $total_metre_arr = array_map('trim', $_POST['total_metre'] ?? []);
   $rate_arr = array_map('trim', $_POST['rate'] ?? []);
   $amount_arr = array_map('trim', $_POST['amount'] ?? []);
 
+  $card_nos_filtered = [];
   $design_nos_filtered = [];
+  $matching_nos_filtered = [];
   $cuts_filtered = [];
   $total_metres_filtered = [];
   $rates_filtered = [];
   $amounts_filtered = [];
 
   for ($i = 0; $i < count($design_no_arr); $i++) {
-    if (!empty($design_no_arr[$i])) {
-      $design_nos_filtered[] = $design_no_arr[$i];
+    if (!empty($design_no_arr[$i]) || !empty($card_no_arr[$i])) {
+      $card_nos_filtered[] = $card_no_arr[$i] ?? '';
+      $design_nos_filtered[] = $design_no_arr[$i] ?? '';
+      $matching_nos_filtered[] = $matching_no_arr[$i] ?? '';
       $cuts_filtered[] = $cut_arr[$i] ?? '';
       $total_metres_filtered[] = $total_metre_arr[$i] ?? '';
       $rates_filtered[] = $rate_arr[$i] ?? '';
@@ -378,7 +384,9 @@ if (isset($_POST['c_submit'])) {
     }
   }
 
+  $card_no = implode(" / ", $card_nos_filtered);
   $design_no = implode(" / ", $design_nos_filtered);
+  $matching_no = implode(" / ", $matching_nos_filtered);
   $cut = implode(" / ", $cuts_filtered);
   $total_metre = implode(" / ", $total_metres_filtered);
   $rate = implode(" / ", $rates_filtered);
@@ -386,8 +394,8 @@ if (isset($_POST['c_submit'])) {
  
   $total_amount = $_POST['total_amount'];
 
-  $query = "INSERT INTO `chalan`(`chalan_no`, `c_date`, `party_id`, `p_name`, `p_address`, `order_no`, `design_no`, `cut`, `total_metre`, `rate`, `amount`, `total_amount`) 
-          VALUES ('$chalan_no','$c_date','$party_id','$p_name','$p_address','$order_no','$design_no','$cut','$total_metre','$rate','$amount','$total_amount')";
+  $query = "INSERT INTO `chalan`(`chalan_no`, `c_date`, `party_id`, `p_name`, `p_address`, `order_no`, `card_no`, `design_no`, `matching_no`, `cut`, `total_metre`, `rate`, `amount`, `total_amount`) 
+          VALUES ('$chalan_no','$c_date','$party_id','$p_name','$p_address','$order_no','$card_no','$design_no','$matching_no','$cut','$total_metre','$rate','$amount','$total_amount')";
 
   $result = mysqli_query($conn, $query);
 
@@ -412,21 +420,27 @@ if (isset($_POST['c_update'])) {
   $p_address = $_POST['p_address'];
   $order_no = $_POST['order_no'];
 
+  $card_no_arr = array_map('trim', $_POST['card_no'] ?? []);
   $design_no_arr = array_map('trim', $_POST['design_no'] ?? []);
+  $matching_no_arr = array_map('trim', $_POST['matching_no'] ?? []);
   $cut_arr = array_map('trim', $_POST['cut'] ?? []);
   $total_metre_arr = array_map('trim', $_POST['total_metre'] ?? []);
   $rate_arr = array_map('trim', $_POST['rate'] ?? []);
   $amount_arr = array_map('trim', $_POST['amount'] ?? []);
 
+  $card_nos_filtered = [];
   $design_nos_filtered = [];
+  $matching_nos_filtered = [];
   $cuts_filtered = [];
   $total_metres_filtered = [];
   $rates_filtered = [];
   $amounts_filtered = [];
 
   for ($i = 0; $i < count($design_no_arr); $i++) {
-    if (!empty($design_no_arr[$i])) {
-      $design_nos_filtered[] = $design_no_arr[$i];
+    if (!empty($design_no_arr[$i]) || !empty($card_no_arr[$i])) {
+      $card_nos_filtered[] = $card_no_arr[$i] ?? '';
+      $design_nos_filtered[] = $design_no_arr[$i] ?? '';
+      $matching_nos_filtered[] = $matching_no_arr[$i] ?? '';
       $cuts_filtered[] = $cut_arr[$i] ?? '';
       $total_metres_filtered[] = $total_metre_arr[$i] ?? '';
       $rates_filtered[] = $rate_arr[$i] ?? '';
@@ -434,7 +448,9 @@ if (isset($_POST['c_update'])) {
     }
   }
 
+  $card_no = implode(" / ", $card_nos_filtered);
   $design_no = implode(" / ", $design_nos_filtered);
+  $matching_no = implode(" / ", $matching_nos_filtered);
   $cut = implode(" / ", $cuts_filtered);
   $total_metre = implode(" / ", $total_metres_filtered);
   $rate = implode(" / ", $rates_filtered);
@@ -443,7 +459,7 @@ if (isset($_POST['c_update'])) {
   $total_amount = $_POST['total_amount'];
 
   $update_query = "UPDATE `chalan` SET `c_date`='$c_date', `chalan_no`='$chalan_no', `party_id`='$party_id', `p_name`='$p_name', `p_address`='$p_address', 
-  `order_no`='$order_no', `design_no`='$design_no', `cut`='$cut', `total_metre`='$total_metre', `rate`='$rate', `amount`='$amount', `total_amount`='$total_amount' 
+  `order_no`='$order_no', `card_no`='$card_no', `design_no`='$design_no', `matching_no`='$matching_no', `cut`='$cut', `total_metre`='$total_metre', `rate`='$rate', `amount`='$amount', `total_amount`='$total_amount' 
   WHERE c_id = '$c_id'";
 
   $update_query_run = mysqli_query($conn, $update_query);

@@ -165,7 +165,7 @@ $today = date('Y-m-d');
 
                                                              $p_name_current = $row['p_name'];
                                                              $active_owner_id = $_SESSION['active_owner_id'] ?? 1;
-                                                             $party_chalans_query = mysqli_query($conn, "SELECT chalan_no, total_amount FROM chalan WHERE p_name = '" . mysqli_real_escape_string($conn, $p_name_current) . "' AND owner_id = $active_owner_id ORDER BY c_id DESC");
+                                                             $party_chalans_query = mysqli_query($conn, "SELECT chalan_no, design_no, total_metre, rate, total_amount FROM chalan WHERE p_name = '" . mysqli_real_escape_string($conn, $p_name_current) . "' AND owner_id = $active_owner_id ORDER BY c_id DESC");
                                                              $chalans_list = [];
                                                              while ($ch_row = mysqli_fetch_assoc($party_chalans_query)) {
                                                                  $chalans_list[] = $ch_row;
@@ -174,25 +174,42 @@ $today = date('Y-m-d');
                                                              for ($i = 0; $i < count($chalan_nos); $i++) {
                                                                  $c_no = $chalan_nos[$i];
                                                                  $c_amt = $c_amounts[$i] ?? '';
+                                                                 $c_detail_query = mysqli_query($conn, "SELECT design_no, total_metre, rate FROM chalan WHERE chalan_no = '" . mysqli_real_escape_string($conn, $c_no) . "' AND owner_id = $active_owner_id LIMIT 1");
+                                                                 $c_detail = mysqli_fetch_assoc($c_detail_query);
+                                                                 $c_design = $c_detail['design_no'] ?? '';
+                                                                 $c_metre = $c_detail['total_metre'] ?? '';
+                                                                 $c_rate = $c_detail['rate'] ?? '';
                                                              ?>
                                                              <div class="row chalan-row mb-3 align-items-end">
-                                                                 <div class="col-md-5 col-5 col-remove">
+                                                                 <div class="col-md-3 col-6 col-remove">
                                                                      <label class="form-label">Chalan No.</label>
                                                                      <select name="chalan_no[]" class="form-select chalan-select" required>
                                                                          <option value="">-- Select Chalan No --</option>
                                                                          <?php
                                                                          foreach ($chalans_list as $ch) {
                                                                              $selected_attr = ($c_no == $ch['chalan_no']) ? "selected" : "";
-                                                                             echo '<option value="' . htmlspecialchars($ch['chalan_no']) . '" data-amount="' . htmlspecialchars($ch['total_amount']) . '" ' . $selected_attr . '>' . htmlspecialchars($ch['chalan_no']) . '</option>';
+                                                                             echo '<option value="' . htmlspecialchars($ch['chalan_no']) . '" data-amount="' . htmlspecialchars($ch['total_amount']) . '" data-design="' . htmlspecialchars($ch['design_no'] ?? '') . '" data-metre="' . htmlspecialchars($ch['total_metre'] ?? '') . '" data-rate="' . htmlspecialchars($ch['rate'] ?? '') . '" ' . $selected_attr . '>' . htmlspecialchars($ch['chalan_no']) . '</option>';
                                                                          }
                                                                          ?>
                                                                      </select>
                                                                  </div>
-                                                                 <div class="col-md-5 col-5">
+                                                                 <div class="col-md-2 col-6">
+                                                                     <label class="form-label">Design No.</label>
+                                                                     <input type="text" class="form-control c_design" value="<?php echo htmlspecialchars($c_design); ?>" readonly>
+                                                                 </div>
+                                                                 <div class="col-md-2 col-6">
+                                                                     <label class="form-label">Total Metre</label>
+                                                                     <input type="text" class="form-control c_metre" value="<?php echo htmlspecialchars($c_metre); ?>" readonly>
+                                                                 </div>
+                                                                 <div class="col-md-2 col-6">
+                                                                     <label class="form-label">Rate</label>
+                                                                     <input type="text" class="form-control c_rate" value="<?php echo htmlspecialchars($c_rate); ?>" readonly>
+                                                                 </div>
+                                                                 <div class="col-md-2 col-6">
                                                                      <label class="form-label">Chalan Amount</label>
                                                                      <input type="text" name="c_amount[]" value="<?php echo htmlspecialchars($c_amt); ?>" class="form-control c_amount" readonly>
                                                                  </div>
-                                                                 <div class="col-md-2 col-2">
+                                                                 <div class="col-md-1 col-6">
                                                                      <button type="button" class="btn btn-danger btn-sm c_removeBtn">Remove</button>
                                                                  </div>
                                                              </div>
@@ -422,29 +439,34 @@ $today = date('Y-m-d');
 
 
                                                         <div id="BillForm">
-
-                                                            <div class="row">
-
-                                                                <div class="col-6 mb-3 col-remove">
+                                                            <div class="row chalan-row mb-3 align-items-end">
+                                                                <div class="col-md-3 col-6 col-remove">
                                                                     <label class="form-label">Chalan No.</label>
-
-                                                                    <input type="text" name="chalan_no[]"
-                                                             <div class="row chalan-row mb-3 align-items-end">
-                                                                 <div class="col-md-5 col-5 col-remove">
-                                                                     <label class="form-label">Chalan No.</label>
-                                                                     <select name="chalan_no[]" class="form-select chalan-select" required>
-                                                                         <option value="">-- Select Chalan No --</option>
-                                                                     </select>
-                                                                 </div>
-                                                                 <div class="col-md-5 col-5">
-                                                                     <label class="form-label">Chalan Amount</label>
-                                                                     <input type="text" name="c_amount[]" class="form-control c_amount" readonly>
-                                                                 </div>
-                                                                 <div class="col-md-2 col-2">
-                                                                     <button type="button" class="btn btn-danger btn-sm c_removeBtn">Remove</button>
-                                                                 </div>
-                                                             </div>
-                                                         </div>
+                                                                    <select name="chalan_no[]" class="form-select chalan-select" required>
+                                                                        <option value="">-- Select Chalan No --</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-md-2 col-6">
+                                                                    <label class="form-label">Design No.</label>
+                                                                    <input type="text" class="form-control c_design" readonly>
+                                                                </div>
+                                                                <div class="col-md-2 col-6">
+                                                                    <label class="form-label">Total Metre</label>
+                                                                    <input type="text" class="form-control c_metre" readonly>
+                                                                </div>
+                                                                <div class="col-md-2 col-6">
+                                                                    <label class="form-label">Rate</label>
+                                                                    <input type="text" class="form-control c_rate" readonly>
+                                                                </div>
+                                                                <div class="col-md-2 col-6">
+                                                                    <label class="form-label">Chalan Amount</label>
+                                                                    <input type="text" name="c_amount[]" class="form-control c_amount" readonly>
+                                                                </div>
+                                                                <div class="col-md-1 col-6">
+                                                                    <button type="button" class="btn btn-danger btn-sm c_removeBtn">Remove</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
 
                                                          <div class="mb-3">
                                                              <button type="button" id="addRow" class="btn btn-secondary btn-sm">+ Add Chalan Row</button>

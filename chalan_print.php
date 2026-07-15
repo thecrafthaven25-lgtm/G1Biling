@@ -81,7 +81,9 @@ $id = $_GET['c_id'] ?? null;
                             <thead>
                                 <tr class="tm_accent_bg">
                                     <th class="tm_width_1 tm_semi_bold tm_white_color tm_text_center">No</th>
-                                    <th class="tm_width_3 tm_semi_bold tm_white_color">Design No</th>
+                                    <th class="tm_width_2 tm_semi_bold tm_white_color">Card No</th>
+                                    <th class="tm_width_2 tm_semi_bold tm_white_color">Design No</th>
+                                    <th class="tm_width_2 tm_semi_bold tm_white_color">Matching No</th>
                                     <th class="tm_width_2 tm_semi_bold tm_white_color tm_text_center">Fabric</th>
                                     <th class="tm_width_1 tm_semi_bold tm_white_color tm_text_center">Cut (Mtr)</th>
                                     <th class="tm_width_2 tm_semi_bold tm_white_color tm_text_center">Total Metre</th>
@@ -91,7 +93,9 @@ $id = $_GET['c_id'] ?? null;
                             </thead>
                             <tbody>
                                 <?php
+                                $card_no_arr = explode(' / ', $row1['card_no'] ?? '');
                                 $design_no_arr = explode(' / ', $row1['design_no']);
+                                $matching_no_arr = explode(' / ', $row1['matching_no'] ?? '');
                                 $cut_arr = explode(' / ', $row1['cut']);
                                 $total_metre_arr = explode(' / ', $row1['total_metre']);
                                 $rate_arr = explode(' / ', $row1['rate']);
@@ -101,7 +105,9 @@ $id = $_GET['c_id'] ?? null;
                                 ?>
                                 <tr>
                                     <td class="tm_text_center"><?php echo $i + 1; ?></td>
+                                    <td class="tm_primary_color"><b><?php echo htmlspecialchars($card_no_arr[$i] ?? ''); ?></b></td>
                                     <td class="tm_primary_color"><b><?php echo htmlspecialchars($design_no_arr[$i] ?? ''); ?></b></td>
+                                    <td class="tm_primary_color"><?php echo htmlspecialchars($matching_no_arr[$i] ?? '-'); ?></td>
                                     <td class="tm_text_center"><?php echo htmlspecialchars($fabric); ?></td>
                                     <td class="tm_text_center"><?php echo htmlspecialchars($cut_arr[$i] ?? '-'); ?></td>
                                     <td class="tm_text_center tm_primary_color"><?php echo htmlspecialchars($total_metre_arr[$i] ?? '-'); ?></td>

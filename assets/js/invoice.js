@@ -51,11 +51,11 @@ $("#p_name").change(function () {
         var p_name = $(this).val();
         if (p_name) {
             loadChalanDesignOptions(p_name, function(options) {
-                $(".design-select").each(function() {
+                $(".card-select").each(function() {
                     $(this).html(options);
                     var row = $(this).closest('.design-row');
                     row.find('.cuts-container').empty();
-                    row.find('.design-metre, .design-rate, .design-amount, .design-cut-hidden').val('');
+                    row.find('.design-no-val, .design-matching-val, .design-metre, .design-rate, .design-amount, .design-cut-hidden').val('');
                 });
                 calculateChalanTotalAmount();
             });
@@ -75,17 +75,25 @@ $(document).ready(function () {
 
 // Add design row
 $(document).on("click", "#addDesignRow", function() {
-    var options = cachedDesignOptions || '<option value="">-- Select Design No --</option>';
+    var options = cachedDesignOptions || '<option value="">-- Select Card No --</option>';
     var newRow = $(
         '<div class="design-row border p-3 mb-3 bg-light rounded position-relative">' +
         '  <div class="row">' +
-        '    <div class="col-md-3 col-12 mb-3">' +
-        '      <label class="form-label font-weight-bold">Design No</label>' +
-        '      <select class="form-select design-select" name="design_no[]" required>' +
+        '    <div class="col-md-2 col-12 mb-3">' +
+        '      <label class="form-label font-weight-bold">Card No</label>' +
+        '      <select class="form-select card-select" name="card_no[]" required>' +
         '        ' + options +
         '      </select>' +
         '    </div>' +
-        '    <div class="col-md-3 col-12 mb-3">' +
+        '    <div class="col-md-2 col-6 mb-3">' +
+        '      <label class="form-label font-weight-bold">Design No</label>' +
+        '      <input type="text" name="design_no[]" class="form-control design-no-val" readonly>' +
+        '    </div>' +
+        '    <div class="col-md-2 col-6 mb-3">' +
+        '      <label class="form-label font-weight-bold">Matching No</label>' +
+        '      <input type="text" name="matching_no[]" class="form-control design-matching-val" readonly>' +
+        '    </div>' +
+        '    <div class="col-md-2 col-12 mb-3">' +
         '      <label class="form-label font-weight-bold">Cuts</label>' +
         '      <div class="cuts-section border p-2 rounded bg-white" style="min-height: 38px;">' +
         '        <div class="cuts-container d-flex flex-wrap gap-1 align-items-center mb-1">' +
@@ -94,16 +102,16 @@ $(document).on("click", "#addDesignRow", function() {
         '      </div>' +
         '      <input type="hidden" name="cut[]" class="design-cut-hidden">' +
         '    </div>' +
-        '    <div class="col-md-2 col-6 mb-3">' +
-        '      <label class="form-label">Total Metre</label>' +
+        '    <div class="col-md-1 col-6 mb-3">' +
+        '      <label class="form-label font-weight-bold">Total Metre</label>' +
         '      <input type="text" name="total_metre[]" class="form-control design-metre" readonly>' +
         '    </div>' +
-        '    <div class="col-md-2 col-6 mb-3">' +
-        '      <label class="form-label">Rate</label>' +
-        '      <input type="text" name="rate[]" class="form-control design-rate" readonly>' +
+        '    <div class="col-md-1 col-6 mb-3">' +
+        '      <label class="form-label font-weight-bold">Rate</label>' +
+        '      <input type="text" name="rate[]" class="form-control design-rate">' +
         '    </div>' +
         '    <div class="col-md-2 col-6 mb-3">' +
-        '      <label class="form-label">Amount</label>' +
+        '      <label class="form-label font-weight-bold">Amount</label>' +
         '      <input type="text" name="amount[]" class="form-control design-amount amount_1" readonly>' +
         '    </div>' +
         '  </div>' +
@@ -121,21 +129,22 @@ $(document).on("click", ".remove-design-row", function() {
     calculateChalanTotalAmount();
 });
 
-// Design select change
-$(document).on("change", ".design-select", function() {
+// Card select change
+$(document).on("change", ".card-select", function() {
     var selectEl = $(this);
-    var designNo = selectEl.val();
+    var cardNo = selectEl.val();
     var row = selectEl.closest(".design-row");
 
-    if (designNo) {
+    if (cardNo) {
         $.ajax({
             url: "data/get_order.php",
             type: "POST",
-            data: { design_no: designNo },
+            data: { card_no: cardNo },
             dataType: "json",
             success: function(go) {
                 if (go) {
-                    row.find(".design-rate").val(go.rate);
+                    row.find(".design-no-val").val(go.design_no || '');
+                    row.find(".design-matching-val").val(go.matching_no || '');
                     
                     // Clear existing cuts
                     var cutsContainer = row.find(".cuts-container");
@@ -161,16 +170,22 @@ $(document).on("change", ".design-select", function() {
                     updateRowCalculations(row);
                 } else {
                     row.find(".cuts-container").empty();
-                    row.find(".design-metre, .design-rate, .design-amount, .design-cut-hidden").val('');
+                    row.find(".design-no-val, .design-matching-val, .design-metre, .design-rate, .design-amount, .design-cut-hidden").val('');
                     calculateChalanTotalAmount();
                 }
             }
         });
     } else {
         row.find(".cuts-container").empty();
-        row.find(".design-metre, .design-rate, .design-amount, .design-cut-hidden").val('');
+        row.find(".design-no-val, .design-matching-val, .design-metre, .design-rate, .design-amount, .design-cut-hidden").val('');
         calculateChalanTotalAmount();
     }
+});
+
+// Rate input change
+$(document).on("input change", ".design-rate", function() {
+    var row = $(this).closest(".design-row");
+    updateRowCalculations(row);
 });
 
 // Add Cut click
@@ -241,7 +256,7 @@ function loadBillChalanOptions(p_name, callback) {
         success: function(data) {
             var optionsHtml = '<option value="">-- Select Chalan No --</option>';
             $.each(data, function(index, item) {
-                optionsHtml += '<option value="' + item.chalan_no + '" data-amount="' + item.total_amount + '">' + item.chalan_no + '</option>';
+                optionsHtml += '<option value="' + item.chalan_no + '" data-amount="' + item.total_amount + '" data-design="' + (item.design_no || '') + '" data-metre="' + (item.total_metre || '') + '" data-rate="' + (item.rate || '') + '">' + item.chalan_no + '</option>';
             });
             cachedChalanOptions = optionsHtml;
             if (callback) callback(optionsHtml);
@@ -258,7 +273,7 @@ $("#p_name").change(function () {
                 $(".chalan-select").each(function() {
                     $(this).html(options);
                     var row = $(this).closest('.chalan-row');
-                    row.find('.c_amount').val('');
+                    row.find('.c_amount, .c_design, .c_metre, .c_rate').val('');
                 });
                 calculateBillTotals();
             });
@@ -280,19 +295,21 @@ $(document).ready(function () {
                 success: function(data) {
                     var optionsHtml = '<option value="">-- Select Chalan No --</option>';
                     $.each(data, function(index, item) {
-                        optionsHtml += '<option value="' + item.chalan_no + '" data-amount="' + item.total_amount + '">' + item.chalan_no + '</option>';
+                        optionsHtml += '<option value="' + item.chalan_no + '" data-amount="' + item.total_amount + '" data-design="' + (item.design_no || '') + '" data-metre="' + (item.total_metre || '') + '" data-rate="' + (item.rate || '') + '">' + item.chalan_no + '</option>';
                     });
                     cachedChalanOptions = optionsHtml;
                     
-                    // Attach data-amount to pre-existing option tags on edit page
+                    // Attach data-attributes to pre-existing option tags on edit page
                     $(".chalan-select").each(function() {
                         var selectEl = $(this);
-                        var currentVal = selectEl.val();
                         selectEl.find("option").each(function() {
                             var optionVal = $(this).val();
                             var matchedItem = data.find(function(i) { return i.chalan_no == optionVal; });
                             if (matchedItem) {
                                 $(this).attr("data-amount", matchedItem.total_amount);
+                                $(this).attr("data-design", matchedItem.design_no);
+                                $(this).attr("data-metre", matchedItem.total_metre);
+                                $(this).attr("data-rate", matchedItem.rate);
                             }
                         });
                     });
@@ -308,8 +325,14 @@ $(document).on("change", ".chalan-select", function() {
     var selectEl = $(this);
     var selectedOption = selectEl.find("option:selected");
     var amount = selectedOption.attr("data-amount") || selectedOption.data("amount") || 0;
+    var design = selectedOption.attr("data-design") || selectedOption.data("design") || '';
+    var metre = selectedOption.attr("data-metre") || selectedOption.data("metre") || '';
+    var rate = selectedOption.attr("data-rate") || selectedOption.data("rate") || '';
     var row = selectEl.closest(".chalan-row");
     row.find(".c_amount").val(amount);
+    row.find(".c_design").val(design);
+    row.find(".c_metre").val(metre);
+    row.find(".c_rate").val(rate);
     calculateBillTotals();
 });
 
@@ -387,17 +410,29 @@ $(document).on("click", "#addRow", function () {
         var options = cachedChalanOptions || '<option value="">-- Select Chalan No --</option>';
         var newRow = $(
             '<div class="row chalan-row mb-3 align-items-end">' +
-            '  <div class="col-md-5 col-5 col-remove">' +
+            '  <div class="col-md-3 col-6 col-remove">' +
             '    <label class="form-label">Chalan No.</label>' +
             '    <select name="chalan_no[]" class="form-select chalan-select" required>' +
             '      ' + options +
             '    </select>' +
             '  </div>' +
-            '  <div class="col-md-5 col-5">' +
+            '  <div class="col-md-2 col-6">' +
+            '    <label class="form-label">Design No.</label>' +
+            '    <input type="text" class="form-control c_design" readonly>' +
+            '  </div>' +
+            '  <div class="col-md-2 col-6">' +
+            '    <label class="form-label">Total Metre</label>' +
+            '    <input type="text" class="form-control c_metre" readonly>' +
+            '  </div>' +
+            '  <div class="col-md-2 col-6">' +
+            '    <label class="form-label">Rate</label>' +
+            '    <input type="text" class="form-control c_rate" readonly>' +
+            '  </div>' +
+            '  <div class="col-md-2 col-6">' +
             '    <label class="form-label">Chalan Amount</label>' +
             '    <input type="text" name="c_amount[]" class="form-control c_amount" readonly>' +
             '  </div>' +
-            '  <div class="col-md-2 col-2">' +
+            '  <div class="col-md-1 col-6">' +
             '    <button type="button" class="btn btn-danger btn-sm c_removeBtn">Remove</button>' +
             '  </div>' +
             '</div>'

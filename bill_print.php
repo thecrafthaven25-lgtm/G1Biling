@@ -75,8 +75,11 @@ $id = $_GET['b_id'] ?? null;
                             <thead>
                                 <tr class="tm_accent_bg">
                                     <th class="tm_width_1 tm_semi_bold tm_white_color tm_text_center">No</th>
-                                    <th class="tm_width_5 tm_semi_bold tm_white_color">Chalan Reference</th>
-                                    <th class="tm_width_4 tm_semi_bold tm_white_color tm_text_center">Chalan Amount</th>
+                                    <th class="tm_width_2 tm_semi_bold tm_white_color">Chalan No</th>
+                                    <th class="tm_width_3 tm_semi_bold tm_white_color">Design No</th>
+                                    <th class="tm_width_2 tm_semi_bold tm_white_color tm_text_center">Total Metre</th>
+                                    <th class="tm_width_2 tm_semi_bold tm_white_color tm_text_center">Rate</th>
+                                    <th class="tm_width_2 tm_semi_bold tm_white_color tm_text_center">Chalan Amount</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -85,10 +88,19 @@ $id = $_GET['b_id'] ?? null;
                                 $c_amount_arr = explode(', ', $row1['c_amount']);
 
                                 for ($i = 0; $i < count($chalan_no_arr); $i++) {
+                                    $c_no = $chalan_no_arr[$i] ?? '';
+                                    $c_detail_query = mysqli_query($conn, "SELECT design_no, total_metre, rate FROM chalan WHERE chalan_no = '" . mysqli_real_escape_string($conn, $c_no) . "' AND owner_id = $owner_id LIMIT 1");
+                                    $c_detail = mysqli_fetch_assoc($c_detail_query);
+                                    $c_design = $c_detail['design_no'] ?? '';
+                                    $c_metre = $c_detail['total_metre'] ?? '';
+                                    $c_rate = $c_detail['rate'] ?? '';
                                 ?>
                                 <tr>
                                     <td class="tm_text_center"><?php echo $i + 1; ?></td>
-                                    <td class="tm_primary_color"><b>Chalan No: <?php echo htmlspecialchars($chalan_no_arr[$i] ?? ''); ?></b></td>
+                                    <td class="tm_primary_color"><b><?php echo htmlspecialchars($c_no); ?></b></td>
+                                    <td class="tm_primary_color"><?php echo htmlspecialchars($c_design); ?></td>
+                                    <td class="tm_text_center tm_primary_color"><?php echo htmlspecialchars($c_metre); ?></td>
+                                    <td class="tm_text_center tm_primary_color">₹ <?php echo htmlspecialchars($c_rate); ?></td>
                                     <td class="tm_text_center tm_primary_color">₹ <?php echo htmlspecialchars($c_amount_arr[$i] ?? '0.00'); ?></td>
                                 </tr>
                                 <?php } ?>

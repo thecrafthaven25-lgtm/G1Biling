@@ -43,8 +43,8 @@ class GridDatatable {
                     name: "ID",
                     formatter: function (e) { return gridjs.html('<span class="fw-semibold">' + e + "</span>") }
                 },
-                    "Date", "Party Name", "Card No.", "Design No", "Details", "Febrics", "Matching No.", "Cut", "Total Metre", "Rate", 
-                    "Total Amount ", "Order Status", {name: "Actions", width: "120px",
+                    "Date", "Party Name", "Card No.", "Design No", "Details", "Febrics", "Matching No.", "Cut", "Total Metre", 
+                    "Order Status", {name: "Actions", width: "120px",
                     formatter: (_, owner) => {
                         const id = owner.cells[0].data;
                         return gridjs.html(
@@ -67,7 +67,7 @@ class GridDatatable {
                 server: {
                     url: 'data/order_data.php',
                     then: data => data.invoice.map(invoice => [invoice.i_id, invoice.date, invoice.p_name, invoice.card_no, invoice.design_no, 
-                        invoice.details, invoice.fabric, invoice.matching_no, invoice.cut, invoice.total_metre, invoice.rate, invoice.amount, 
+                        invoice.details, invoice.fabric, invoice.matching_no, invoice.cut, invoice.total_metre, 
                         invoice.status])
                 },
                 pagination: { limit: 10 }, search: !0, sort: !0
@@ -87,7 +87,7 @@ class GridDatatable {
                     name: "ID",
                     formatter: function (e) { return gridjs.html('<span class="fw-semibold">' + e + "</span>") }
                 },
-                    "Date", "Chalan No", "Party Name", "Order No.", "Design No", "Cut", "Total Metre", "Rate", "Amount", "Total Amount", {
+                    "Date", "Chalan No", "Party Name", "Order No.", "Card No.", "Design No", "Matching No.", "Cut", "Total Metre", "Rate", "Amount", "Total Amount", {
                     name: "Actions", width: "120px",
                     formatter: (_, owner) => {
                         const id = owner.cells[0].data;
@@ -111,7 +111,7 @@ class GridDatatable {
                 server: {
                     url: 'data/chalan_data.php',
                     then: data => data.chalan.map(chalan => [chalan.c_id, 
-                        chalan.c_date, chalan.chalan_no, chalan.p_name, chalan.order_no, chalan.design_no, chalan.cut, chalan.total_metre, 
+                        chalan.c_date, chalan.chalan_no, chalan.p_name, chalan.order_no, chalan.card_no || '', chalan.design_no, chalan.matching_no || '', chalan.cut, chalan.total_metre, 
                         chalan.rate, chalan.amount, chalan.total_amount])
                 },
                 pagination: { limit: 10 }, search: !0, sort: !0

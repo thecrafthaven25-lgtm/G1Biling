@@ -208,28 +208,16 @@ $today = date('Y-m-d');
 
 
                                             <div class="row">
-                                                <div class="col-md-3 col-6 mb-3">
+                                                <div class="col-md-6 col-6 mb-3">
                                                     <label class="form-label"><b>Total Maching</b></label>
                                                     <input type="text" id="totalRow" name="total_matching"
                                                         class="form-control" readonly value="<?php echo $row1['total_matching'] ?>">
                                                 </div>
 
-                                                <div class="col-md-3 col-6 mb-3">
+                                                <div class="col-md-6 col-6 mb-3">
                                                     <label class="form-label"><b>Total Metre</b></label>
                                                     <input type="text" id="total_metre" name="total_metre"
                                                         class="form-control" readonly value="<?php echo $row1['total_metre'] ?>">
-                                                </div>
-
-                                                <div class="col-md-3 col-6 mb-3">
-                                                    <label class="form-label">Rate</label>
-                                                    <input type="text" id="rate" name="rate"
-                                                        class="form-control rate" placeholder="Rate per metre" value="<?php echo $row1['rate'] ?>">
-                                                </div>
-
-                                                <div class="col-md-3 col-6 mb-3">
-                                                    <label class="form-label"><b>Total Amount</b></label>
-                                                    <input type="text" id="amount" name="amount"
-                                                        class="form-control" readonly value="<?php echo $row1['amount'] ?>">
                                                 </div>
                                             </div>
 
@@ -375,27 +363,15 @@ $today = date('Y-m-d');
                                     <hr>
 
                                     <div class="row">
-                                        <div class="col-md-3 col-6 mb-3">
+                                        <div class="col-md-6 col-6 mb-3">
                                             <label class="form-label"><b>Total Maching</b></label>
                                             <input type="text" id="totalRow" value="1" name="total_matching"
                                                 class="form-control" readonly>
                                         </div>
 
-                                        <div class="col-md-3 col-6 mb-3">
+                                        <div class="col-md-6 col-6 mb-3">
                                             <label class="form-label"><b>Total Metre</b></label>
                                             <input type="text" id="total_metre" name="total_metre"
-                                                class="form-control" value="0" readonly>
-                                        </div>
-
-                                        <div class="col-md-3 col-6 mb-3">
-                                            <label class="form-label">Rate</label>
-                                            <input type="text" id="rate" name="rate"
-                                                class="form-control rate" placeholder="Rate per metre">
-                                        </div>
-
-                                        <div class="col-md-3 col-6 mb-3">
-                                            <label class="form-label"><b>Total Amount</b></label>
-                                            <input type="text" id="amount" name="amount"
                                                 class="form-control" value="0" readonly>
                                         </div>
                                     </div>

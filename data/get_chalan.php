@@ -1,25 +1,22 @@
 <?php include "../db_con.php";
 session_start();
 
-$p_name = $_POST['p_name'];
+$p_name = $_POST['p_name'] ?? '';
 $active_owner_id = $_SESSION['active_owner_id'] ?? 1;
 
-$sql =  "SELECT * FROM orders WHERE p_name = '$p_name' AND owner_id = $active_owner_id";
-$result = mysqli_query($conn,$sql);
+$p_name_escaped = mysqli_real_escape_string($conn, $p_name);
 
-echo '<option id="non" value="">-- Select Design No -- </option>';
+$sql = "SELECT DISTINCT card_no FROM orders WHERE p_name = '$p_name_escaped' AND owner_id = $active_owner_id ORDER BY card_no DESC";
+$result = mysqli_query($conn, $sql);
 
+echo '<option value="">-- Select Card No --</option>';
 
-
-while($row=mysqli_fetch_assoc($result))
-{
-?>
-
-<option value="<?php echo $row['design_no']?>">
-    <?php echo $row['design_no']?>
-</option>
-
-<?php 
+if ($result) {
+    while ($row = mysqli_fetch_assoc($result)) {
+        if (!empty($row['card_no'])) {
+            echo '<option value="' . htmlspecialchars($row['card_no']) . '">' . htmlspecialchars($row['card_no']) . '</option>';
+        }
+    }
 }
-
+$conn->close();
 ?>
