@@ -143,183 +143,95 @@ $today = date('Y-m-d');
                                 <hr>
 
                                 <div id="ChalanForm">
+                                    <?php 
+                                    $design_nos = explode(" / ", $row['design_no']);
+                                    $cuts = explode(" / ", $row['cut']);
+                                    $total_metres = explode(" / ", $row['total_metre']);
+                                    $rates = explode(" / ", $row['rate']);
+                                    $amounts = explode(" / ", $row['amount']);
 
-                                    <div class="row">
-                                        <?php 
-
-                                         $design_no = $row['design_no'];
-                                        // Split full name
-                                        $designParts  = explode(" / ", $design_no, 2);
-                                        $design_no_1 = $designParts[0];
-                                        $design_no_2 = isset($designParts[1]) ? $designParts[1] : "";
-
-                                        $cut = $row['cut'];
-                                        // Split full name
-                                        $cutParts  = explode(" / ", $cut, 2);
-                                        $cut_1 = $cutParts[0];
-                                        $cut_2 = isset($cutParts[1]) ? $cutParts[1] : "";
-
-
-
-                                        $total_metre = $row['total_metre'];
-                                        // Split full name
-                                        $metreParts  = explode(" / ", $total_metre, 2);
-                                        $total_metre_1 = $metreParts[0];
-                                        $total_metre_2 = isset($metreParts[1]) ? $metreParts[1] : "";
-
-
-
-                                        $rate = $row['rate'];
-                                        // Split full name
-                                        $ratetParts  = explode(" / ", $rate, 2);
-                                        $rate_1 = $ratetParts[0];
-                                        $rate_2 = isset($ratetParts[1]) ? $ratetParts[1] : "";
-
-
-
-                                        $amount = $row['amount'];
-                                        // Split full name
-                                        $amountParts  = explode(" / ", $amount, 2);
-                                        $amount_1 = $amountParts[0];
-                                        $amount_2 = isset($amountParts[1]) ? $amountParts[1] : "";
-
-
-
-                                        ?>
-
-                                         <div class="col-md-6">
-                                            <div class="col-12 mb-3">
-                                                <label for="simpleinput" class="form-label">Design No - 1</label>
-                                                <select class="form-select design_no_1" id="design_no_1"
-                                                    name="design_no_1">
-                                                    <option value="">-- Select Design No -- </option>
-
+                                    for ($i = 0; $i < count($design_nos); $i++) {
+                                        $d_no = $design_nos[$i];
+                                        $cut_val = $cuts[$i] ?? '';
+                                        $metre_val = $total_metres[$i] ?? '';
+                                        $rate_val = $rates[$i] ?? '';
+                                        $amount_val = $amounts[$i] ?? '';
+                                    ?>
+                                    <div class="design-row border p-3 mb-3 bg-light rounded position-relative">
+                                        <div class="row">
+                                            <div class="col-md-3 col-12 mb-3">
+                                                <label class="form-label font-weight-bold">Design No</label>
+                                                <select class="form-select design-select" name="design_no[]" required>
+                                                    <option value="">-- Select Design No --</option>
                                                     <?php 
-                                                        $clients  = mysqli_query($conn, "SELECT * FROM orders");
-                                                            while ($row1 = mysqli_fetch_assoc($clients )) {
+                                                    $p_name_current = $row['p_name'];
+                                                    $active_owner_id = $_SESSION['active_owner_id'] ?? 1;
+                                                    $order_designs_query = mysqli_query($conn, "SELECT design_no FROM orders WHERE p_name = '" . mysqli_real_escape_string($conn, $p_name_current) . "' AND owner_id = $active_owner_id");
+                                                    while ($order_design = mysqli_fetch_assoc($order_designs_query)) {
+                                                        $selected_attr = ($d_no == $order_design['design_no']) ? "selected" : "";
+                                                        echo '<option value="' . htmlspecialchars($order_design['design_no']) . '" ' . $selected_attr . '>' . htmlspecialchars($order_design['design_no']) . '</option>';
+                                                    }
                                                     ?>
-                                                            <option value="<?php echo $row1['design_no']; ?>" 
-                                                                <?php if ($design_no_1 == $row1['design_no']) 
-                                                                        {echo "selected";} ?> >
-                                                                <?php echo $row1['design_no']; ?>
-                                                                        </option>';
-                                                                <?php
-                                                                    }
-                                                                ?>
                                                 </select>
                                             </div>
-
-                                            <div class="row">
-                                                <div class="col-6 mb-3">
-                                                    <label class="form-label">Cut - 1</label>
-                                                    <input type="text" id="cut_1" name="cut_1" class="form-control"
-                                                        placeholder="Please select design no 1" 
-                                                        value="<?php echo htmlspecialchars($cut_1); ?>" readonly>
+                                            <div class="col-md-3 col-12 mb-3">
+                                                <label class="form-label font-weight-bold">Cuts</label>
+                                                <div class="cuts-section border p-2 rounded bg-white" style="min-height: 38px;">
+                                                    <div class="cuts-container d-flex flex-wrap gap-1 align-items-center mb-1">
+                                                        <?php 
+                                                        $individual_cuts = explode(", ", $cut_val);
+                                                        foreach ($individual_cuts as $c_item) {
+                                                            if (trim($c_item) !== '') {
+                                                        ?>
+                                                        <div class="cut-input-wrapper d-flex align-items-center bg-light border rounded px-1" style="width: fit-content; margin-bottom: 2px;">
+                                                            <input type="number" step="any" class="cut-val-input form-control form-control-sm border-0 p-0 text-center" style="width: 50px; background: transparent; font-size: 12px; height: auto;" value="<?php echo htmlspecialchars(trim($c_item)); ?>">
+                                                            <button type="button" class="btn-close remove-cut-btn" style="font-size: 9px; padding: 2px; margin-left: 3px;" aria-label="Close"></button>
+                                                        </div>
+                                                        <?php 
+                                                            }
+                                                        }
+                                                        ?>
+                                                    </div>
+                                                    <button type="button" class="btn btn-outline-secondary btn-xs add-cut-btn" style="padding: 2px 6px; font-size: 11px;">+ Add Cut</button>
                                                 </div>
-
-
-                                                <div class="col-6 mb-3">
-                                                    <label class="form-label">Total Metre - 1</label>
-                                                    <input type="text" id="total_metre_1" name="total_metre_1"
-                                                        class="form-control" placeholder="Please select design no 1"
-                                                        value="<?php echo htmlspecialchars($total_metre_1); ?>" readonly>
-                                                </div>
-
-                                                <div class="col-6 mb-3">
-                                                    <label class="form-label">Rate - 1</label>
-                                                    <input type="text" id="rate_1" name="rate_1" class="form-control"
-                                                        placeholder="Please select design no 1" 
-                                                        value="<?php echo htmlspecialchars($rate_1); ?>" readonly>
-                                                </div>
-
-                                                <div class="col-6 mb-3">
-                                                    <label class="form-label">Amount - 1</label>
-                                                    <input type="text" id="amount_1" name="amount_1"
-                                                        class="form-control amount_1"
-                                                        placeholder="Please select design no 1" 
-                                                        value="<?php echo htmlspecialchars($amount_1); ?>" readonly>
-                                                </div>
-
-
+                                                <input type="hidden" name="cut[]" class="design-cut-hidden" value="<?php echo htmlspecialchars($cut_val); ?>">
                                             </div>
-
+                                            <div class="col-md-2 col-6 mb-3">
+                                                <label class="form-label">Total Metre</label>
+                                                <input type="text" name="total_metre[]" class="form-control design-metre" value="<?php echo htmlspecialchars($metre_val); ?>" readonly>
+                                            </div>
+                                            <div class="col-md-2 col-6 mb-3">
+                                                <label class="form-label">Rate</label>
+                                                <input type="text" name="rate[]" class="form-control design-rate" value="<?php echo htmlspecialchars($rate_val); ?>" readonly>
+                                            </div>
+                                            <div class="col-md-2 col-6 mb-3">
+                                                <label class="form-label">Amount</label>
+                                                <input type="text" name="amount[]" class="form-control design-amount amount_1" value="<?php echo htmlspecialchars($amount_val); ?>" readonly>
+                                            </div>
                                         </div>
-
-
-                                        <div class="col-md-6">
-                                            <div class="col-12 mb-3">
-                                                <label for="simpleinput" class="form-label">Design No - 2</label>
-                                                <select class="form-select design_no_2" id="design_no_2"
-                                                    name="design_no_2">
-                                                    <option value="">-- Select Design No -- </option>
-                                                    
-                                                    <?php 
-                                                        $clients  = mysqli_query($conn, "SELECT * FROM orders");
-                                                            while ($row1 = mysqli_fetch_assoc($clients )) {
-                                                    ?>
-                                                            <option value="<?php echo $row1['design_no']; ?>" 
-                                                                <?php if ($design_no_2 == $row1['design_no']) 
-                                                                        {echo "selected";} ?> >
-                                                                <?php echo $row1['design_no']; ?>
-                                                                        </option>';
-                                                                <?php
-                                                                    }
-                                                                ?>
-
-                                                </select>
-                                            </div>
-
-
-                                            <div class="row">
-                                                <div class="col-6 mb-3">
-                                                    <label class="form-label">Cut - 2</label>
-                                                    <input type="text" id="cut_2" name="cut_2" class="form-control"
-                                                        placeholder="Please select design no 2" 
-                                                        value="<?php echo htmlspecialchars($cut_2); ?>" readonly>
-                                                </div>
-
-                                                <div class="col-6 mb-3">
-                                                    <label class="form-label">Total Metre - 2</label>
-                                                    <input type="text" id="total_metre_2" name="total_metre_2"
-                                                        class="form-control" placeholder="Please select design no 2"
-                                                        value="<?php echo htmlspecialchars($total_metre_2); ?>" readonly>
-                                                </div>
-
-                                                <div class="col-6 mb-3">
-                                                    <label class="form-label">Rate - 2</label>
-                                                    <input type="text" id="rate_2" name="rate_2" class="form-control"
-                                                        placeholder="Please select design no 2" 
-                                                        value="<?php echo htmlspecialchars($rate_2); ?>" readonly>
-                                                </div>
-
-                                                <div class="col-6 mb-3">
-                                                    <label class="form-label">Amount - 2</label>
-                                                    <input type="text" id="amount_2" name="amount_2"
-                                                        class="form-control amount_2"
-                                                        placeholder="Please select design no 2" 
-                                                        value="<?php echo htmlspecialchars($amount_2); ?>" readonly>
-                                                </div>
-
-                                            </div>
-
+                                        <div class="text-end">
+                                            <button type="button" class="btn btn-danger btn-sm remove-design-row">Remove</button>
                                         </div>
-
                                     </div>
+                                    <?php } ?>
+                                </div>
 
-                                    <hr>
+                                <div class="mb-3">
+                                    <button type="button" class="btn btn-secondary btn-sm" id="addDesignRow">+ Add Design Row</button>
+                                </div>
 
-                                    <div class="mb-3">
-                                        <label class="form-label">Total Amount</label>
-                                        <input type="text" id="total_amount" name="total_amount" class="form-control"
-                                            value="<?php echo $row['total_amount'] ?>" readonly>
-                                    </div>
+                                <hr>
 
+                                <div class="mb-3">
+                                    <label class="form-label">Total Amount</label>
+                                    <input type="text" id="total_amount" name="total_amount" class="form-control"
+                                        value="<?php echo $row['total_amount'] ?>" readonly>
+                                </div>
 
-                                    <div class="col-12">
-                                        <button class="btn btn-primary cs-mr10" name="c_update"
-                                            type="submit">Update</button>
-                                    </div>
-
+                                <div class="col-12">
+                                    <button class="btn btn-primary cs-mr10" name="c_update"
+                                        type="submit">Update</button>
+                                </div>
                             </form>
 
                             <?PHP }
@@ -404,107 +316,59 @@ $today = date('Y-m-d');
                                 <hr>
 
                                 <div id="ChalanForm">
-
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="col-12 mb-3">
-                                                <label for="simpleinput" class="form-label">Design No - 1</label>
-                                                <select class="form-select design_no_1" id="design_no_1"
-                                                    name="design_no_1">
-                                                    <option value="">-- Select Design No -- </option>
+                                    <div class="design-row border p-3 mb-3 bg-light rounded position-relative">
+                                        <div class="row">
+                                            <div class="col-md-3 col-12 mb-3">
+                                                <label class="form-label font-weight-bold">Design No</label>
+                                                <select class="form-select design-select" name="design_no[]" required>
+                                                    <option value="">-- Select Design No --</option>
                                                 </select>
                                             </div>
-
-                                            <div class="row">
-                                                <div class="col-6 mb-3">
-                                                    <label class="form-label">Cut - 1</label>
-                                                    <input type="text" id="cut_1" name="cut_1" class="form-control"
-                                                        placeholder="Please select design no 1" readonly>
+                                            <div class="col-md-3 col-12 mb-3">
+                                                <label class="form-label font-weight-bold">Cuts</label>
+                                                <div class="cuts-section border p-2 rounded bg-white" style="min-height: 38px;">
+                                                    <div class="cuts-container d-flex flex-wrap gap-1 align-items-center mb-1">
+                                                    </div>
+                                                    <button type="button" class="btn btn-outline-secondary btn-xs add-cut-btn" style="padding: 2px 6px; font-size: 11px;">+ Add Cut</button>
                                                 </div>
-
-
-                                                <div class="col-6 mb-3">
-                                                    <label class="form-label">Total Metre - 1</label>
-                                                    <input type="text" id="total_metre_1" name="total_metre_1"
-                                                        class="form-control" placeholder="Please select design no 1"
-                                                        readonly>
-                                                </div>
-
-                                                <div class="col-6 mb-3">
-                                                    <label class="form-label">Rate - 1</label>
-                                                    <input type="text" id="rate_1" name="rate_1" class="form-control"
-                                                        placeholder="Please select design no 1" readonly>
-                                                </div>
-
-                                                <div class="col-6 mb-3">
-                                                    <label class="form-label">Amount - 1</label>
-                                                    <input type="text" id="amount_1" name="amount_1"
-                                                        class="form-control amount_1"
-                                                        placeholder="Please select design no 1" readonly>
-                                                </div>
-
-
+                                                <input type="hidden" name="cut[]" class="design-cut-hidden">
                                             </div>
-
+                                            <div class="col-md-2 col-6 mb-3">
+                                                <label class="form-label">Total Metre</label>
+                                                <input type="text" name="total_metre[]" class="form-control design-metre" readonly>
+                                            </div>
+                                            <div class="col-md-2 col-6 mb-3">
+                                                <label class="form-label">Rate</label>
+                                                <input type="text" name="rate[]" class="form-control design-rate" readonly>
+                                            </div>
+                                            <div class="col-md-2 col-6 mb-3">
+                                                <label class="form-label">Amount</label>
+                                                <input type="text" name="amount[]" class="form-control design-amount amount_1" readonly>
+                                            </div>
                                         </div>
-
-
-                                        <div class="col-md-6">
-                                            <div class="col-12 mb-3">
-                                                <label for="simpleinput" class="form-label">Design No - 2</label>
-                                                <select class="form-select design_no_2" id="design_no_2"
-                                                    name="design_no_2">
-                                                    <option value="">-- Select Design No -- </option>
-                                                </select>
-                                            </div>
-
-
-                                            <div class="row">
-                                                <div class="col-6 mb-3">
-                                                    <label class="form-label">Cut - 2</label>
-                                                    <input type="text" id="cut_2" name="cut_2" class="form-control"
-                                                        placeholder="Please select design no 2" readonly>
-                                                </div>
-
-                                                <div class="col-6 mb-3">
-                                                    <label class="form-label">Total Metre - 2</label>
-                                                    <input type="text" id="total_metre_2" name="total_metre_2"
-                                                        class="form-control" placeholder="Please select design no 2"
-                                                        readonly>
-                                                </div>
-
-                                                <div class="col-6 mb-3">
-                                                    <label class="form-label">Rate - 2</label>
-                                                    <input type="text" id="rate_2" name="rate_2" class="form-control"
-                                                        placeholder="Please select design no 2" readonly>
-                                                </div>
-
-                                                <div class="col-6 mb-3">
-                                                    <label class="form-label">Amount - 2</label>
-                                                    <input type="text" id="amount_2" name="amount_2"
-                                                        class="form-control amount_2"
-                                                        placeholder="Please select design no 2" readonly>
-                                                </div>
-
-                                            </div>
-
+                                        <div class="text-end">
+                                            <button type="button" class="btn btn-danger btn-sm remove-design-row">Remove</button>
                                         </div>
-
                                     </div>
+                                </div>
 
-                                    <hr>
+                                <div class="mb-3">
+                                    <button type="button" class="btn btn-secondary btn-sm" id="addDesignRow">+ Add Design Row</button>
+                                </div>
 
-                                    <div class="mb-3">
-                                        <label class="form-label">Total Amount</label>
-                                        <input type="text" id="total_amount" name="total_amount" class="form-control"
-                                            value="0" readonly>
-                                    </div>
+                                <hr>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Total Amount</label>
+                                    <input type="text" id="total_amount" name="total_amount" class="form-control"
+                                        value="0" readonly>
+                                </div>
 
 
-                                    <div class="col-md-4 col-12 cs-mb-10">
-                                        <button class="btn btn-primary cs-mr10 " name="c_submit"
-                                            type="submit">Submit</button>
-                                    </div>
+                                <div class="col-md-4 col-12 cs-mb-10">
+                                    <button class="btn btn-primary cs-mr10 " name="c_submit"
+                                        type="submit">Submit</button>
+                                </div>
                             </form>
 
                             <?PHP } ?>
@@ -519,19 +383,7 @@ $today = date('Y-m-d');
 
 
 
-        <script>
-        function calculateChalanTotal() {
-
-            let value1 = parseFloat(document.getElementById("amount_1").value) || 0;
-            let value2 = parseFloat(document.getElementById("amount_2").value) || 0;
-
-            document.getElementById("total_amount").value = value1 + value2;
-
-        }
-
-        document.getElementById("design_no_1").addEventListener("change", calculateChalanTotal);
-        document.getElementById("design_no_2").addEventListener("change", calculateChalanTotal);
-        </script>
+        <!-- Calculations are handled in assets/js/invoice.js -->
 
 
 

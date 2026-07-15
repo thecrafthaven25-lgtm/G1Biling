@@ -158,40 +158,50 @@ $today = date('Y-m-d');
                                                         <hr>
 
 
-                                                        <div id="BillForm">
-                                                            <?php
-                                                                $chalan_no = explode(', ', $row['chalan_no']); // Laptop,Mobile,Tablet
-                                                                $c_amount = explode(', ', $row['c_amount']); // Laptop,Mobile,Tablet
+                                                         <div id="BillForm">
+                                                             <?php
+                                                             $chalan_nos = explode(', ', $row['chalan_no']);
+                                                             $c_amounts = explode(', ', $row['c_amount']);
 
-                                                                for ($i = 0; $i < count($chalan_no); $i++) {
-                                                                ?>
+                                                             $p_name_current = $row['p_name'];
+                                                             $active_owner_id = $_SESSION['active_owner_id'] ?? 1;
+                                                             $party_chalans_query = mysqli_query($conn, "SELECT chalan_no, total_amount FROM chalan WHERE p_name = '" . mysqli_real_escape_string($conn, $p_name_current) . "' AND owner_id = $active_owner_id ORDER BY c_id DESC");
+                                                             $chalans_list = [];
+                                                             while ($ch_row = mysqli_fetch_assoc($party_chalans_query)) {
+                                                                 $chalans_list[] = $ch_row;
+                                                             }
 
-                                                            <div class="row">
+                                                             for ($i = 0; $i < count($chalan_nos); $i++) {
+                                                                 $c_no = $chalan_nos[$i];
+                                                                 $c_amt = $c_amounts[$i] ?? '';
+                                                             ?>
+                                                             <div class="row chalan-row mb-3 align-items-end">
+                                                                 <div class="col-md-5 col-5 col-remove">
+                                                                     <label class="form-label">Chalan No.</label>
+                                                                     <select name="chalan_no[]" class="form-select chalan-select" required>
+                                                                         <option value="">-- Select Chalan No --</option>
+                                                                         <?php
+                                                                         foreach ($chalans_list as $ch) {
+                                                                             $selected_attr = ($c_no == $ch['chalan_no']) ? "selected" : "";
+                                                                             echo '<option value="' . htmlspecialchars($ch['chalan_no']) . '" data-amount="' . htmlspecialchars($ch['total_amount']) . '" ' . $selected_attr . '>' . htmlspecialchars($ch['chalan_no']) . '</option>';
+                                                                         }
+                                                                         ?>
+                                                                     </select>
+                                                                 </div>
+                                                                 <div class="col-md-5 col-5">
+                                                                     <label class="form-label">Chalan Amount</label>
+                                                                     <input type="text" name="c_amount[]" value="<?php echo htmlspecialchars($c_amt); ?>" class="form-control c_amount" readonly>
+                                                                 </div>
+                                                                 <div class="col-md-2 col-2">
+                                                                     <button type="button" class="btn btn-danger btn-sm c_removeBtn">Remove</button>
+                                                                 </div>
+                                                             </div>
+                                                             <?php } ?>
+                                                         </div>
 
-                                                                <div class="col-6 mb-3 col-remove">
-                                                                    <label class="form-label">Chalan No.</label>
-
-                                                                    <input type="text" name="chalan_no[]"
-                                                                        value="<?php echo htmlspecialchars($chalan_no[$i]); ?>"
-                                                                        class="form-control" placeholder="Chalan no">
-                                                                </div>
-                                                                <div class="col-6 mb-3">
-                                                                    <label class="form-label">Chalan Amount</label>
-                                                                    <input type="text" name="c_amount[]"
-                                                                        value="<?php echo htmlspecialchars($c_amount[$i]); ?>"
-                                                                        class="form-control c_amount"
-                                                                        placeholder="Chalan amount">
-                                                                </div>
-
-                                                            </div>
-                                                            <?php } ?>
-                                                        </div>
-
-                                                        <div class="mb-3">
-
-                                                            <div type="button" id="addRow">
-                                                                <span class="nav-text pr-2">+ Add New Row </span>
-                                                            </div>
+                                                         <div class="mb-3">
+                                                             <button type="button" id="addRow" class="btn btn-secondary btn-sm">+ Add Chalan Row</button>
+                                                         </div></div>
 
                                                         </div>
 
@@ -200,86 +210,69 @@ $today = date('Y-m-d');
 
                                                         <div class="row">
 
-                                                            <div class="col-md-4 col-6 mb-3">
-                                                                <label class="form-label"><b>Total Chalan Amount</b></label>
-                                                                <input type="text" id="total_c_amount" name="total_c_amount"
-                                                                    value="<?php echo $row['c_total_amount']; ?>"
-                                                                    class="form-control total_c_amount" readonly>
-                                                            </div>
+                                                         <div class="row">
+                                                             <div class="col-md-4 col-6 mb-3">
+                                                                 <label class="form-label"><b>Total Chalan Amount</b></label>
+                                                                 <input type="text" id="total_c_amount" name="total_c_amount"
+                                                                     value="<?php echo $row['c_total_amount']; ?>"
+                                                                     class="form-control total_c_amount" readonly>
+                                                             </div>
 
+                                                             <div class="col-md-4 col-6 mb-3">
+                                                                 <label class="form-label">Discount</label>
+                                                                 <select class="form-select" id="dis_rate" name="dis_rate">
+                                                                     <?php
+                                                                     for ($d = 1; $d <= 10; $d++) {
+                                                                         $sel = ($row['d_rate'] == $d) ? 'selected' : '';
+                                                                         echo "<option value='{$d}' {$sel}>{$d}%</option>";
+                                                                     }
+                                                                     ?>
+                                                                 </select>
+                                                             </div>
 
+                                                             <div class="col-md-4 col-6 mb-3">
+                                                                 <label class="form-label">Discount Amount</label>
+                                                                 <input type="text" id="dis_amount" name="dis_amount"
+                                                                     class="form-control dis_amount"
+                                                                     value="<?php echo $row['d_amount']; ?>" readonly>
+                                                             </div>
+                                                         </div>
 
-                                                            <input type="text" id="rate" hidden>
+                                                         <div class="row">
+                                                             <div class="col-md-3 col-6 mb-3">
+                                                                 <label class="form-label">CGST Rate (%)</label>
+                                                                 <input type="number" step="0.01" id="cgst_rate" name="cgst_rate"
+                                                                     class="form-control cgst_rate"
+                                                                     value="<?php echo htmlspecialchars($row['cgst_rate'] ?? '2.50'); ?>">
+                                                             </div>
+                                                             <div class="col-md-3 col-6 mb-3">
+                                                                 <label class="form-label">CGST Amount</label>
+                                                                 <input type="text" id="cgst" name="cgst"
+                                                                     class="form-control cgst"
+                                                                     value="<?php echo $row['cgst']; ?>" readonly>
+                                                             </div>
+                                                             <div class="col-md-3 col-6 mb-3">
+                                                                 <label class="form-label">SGST Rate (%)</label>
+                                                                 <input type="number" step="0.01" id="sgst_rate" name="sgst_rate"
+                                                                     class="form-control sgst_rate"
+                                                                     value="<?php echo htmlspecialchars($row['sgst_rate'] ?? '2.50'); ?>">
+                                                             </div>
+                                                             <div class="col-md-3 col-6 mb-3">
+                                                                 <label class="form-label">SGST Amount</label>
+                                                                 <input type="text" id="sgst" name="sgst"
+                                                                     class="form-control sgst"
+                                                                     value="<?php echo $row['sgst']; ?>" readonly>
+                                                             </div>
+                                                         </div>
 
-
-                                                            <div class="col-md-4 col-6 mb-3">
-                                                                <label class="form-label">Discount</label>
-                                                                <select class="form-select" id="dis_rate"
-                                                                    name="dis_rate">
-                                                                    <option value="1"
-                                                                        <?= ($row['d_rate'] == '1') ? 'selected' : '' ?>>
-                                                                        1% </option>
-                                                                    <option value="2"
-                                                                        <?= ($row['d_rate'] == '2') ? 'selected' : '' ?>>
-                                                                        2% </option>
-                                                                    <option value="3"
-                                                                        <?= ($row['d_rate'] == '3') ? 'selected' : '' ?>>
-                                                                        3% </option>
-                                                                    <option value="4"
-                                                                        <?= ($row['d_rate'] == '4') ? 'selected' : '' ?>>
-                                                                        4% </option>
-                                                                    <option value="5"
-                                                                        <?= ($row['d_rate'] == '5') ? 'selected' : '' ?>>
-                                                                        5% </option>
-                                                                    <option value="6"
-                                                                        <?= ($row['d_rate'] == '6') ? 'selected' : '' ?>>
-                                                                        6% </option>
-                                                                    <option value="7"
-                                                                        <?= ($row['d_rate'] == '7') ? 'selected' : '' ?>>
-                                                                        7% </option>
-                                                                    <option value="8"
-                                                                        <?= ($row['d_rate'] == '8') ? 'selected' : '' ?>>
-                                                                        8% </option>
-                                                                    <option value="9"
-                                                                        <?= ($row['d_rate'] == '9') ? 'selected' : '' ?>>
-                                                                        9% </option>
-                                                                    <option value="10"
-                                                                        <?= ($row['d_rate'] == '10') ? 'selected' : '' ?>>
-                                                                        10% </option>
-                                                                </select>
-                                                            </div>
-
-                                                            <div class="col-md-4 col-6 mb-3">
-                                                                <label class="form-label">Discount Amount</label>
-                                                                <input type="text" id="dis_amount" name="dis_amount"
-                                                                    class="form-control dis_amount"
-                                                                    value="<?php echo $row['d_amount']; ?>"
-                                                                    placeholder="Please select design no 2" readonly>
-                                                            </div>
-                                                            <div class="col-md-4 col-6 mb-3">
-                                                                <label class="form-label">CGST</label>
-                                                                <input type="text" id="cgst" name="cgst"
-                                                                    class="form-control cgst"
-                                                                    value="<?php echo $row['cgst']; ?>"
-                                                                    placeholder="Please select design no 2" readonly>
-                                                            </div>
-                                                            <div class="col-md-4 col-6 mb-3">
-                                                                <label class="form-label">SGST IGST</label>
-                                                                <input type="text" id="sgst" name="sgst"
-                                                                    class="form-control sgst"
-                                                                    value="<?php echo $row['sgst']; ?>"
-                                                                    placeholder="Please select design no 2" readonly>
-                                                            </div>
-
-                                                            <div class="col-md-4 col-6 mb-3">
-                                                                <label class="form-label">Total GST</label>
-                                                                <input type="text" id="totalgst" name="totalgst"
-                                                                    class="form-control totalgst"
-                                                                    value="<?php echo $row['total_gst']; ?>"
-                                                                    placeholder="Please select design no 2" readonly>
-                                                            </div>
-
-                                                        </div>
+                                                         <div class="row">
+                                                             <div class="col-md-4 col-6 mb-3">
+                                                                 <label class="form-label">Total GST</label>
+                                                                 <input type="text" id="totalgst" name="totalgst"
+                                                                     class="form-control totalgst"
+                                                                     value="<?php echo $row['total_gst']; ?>" readonly>
+                                                             </div>
+                                                         </div>
 
 
                                                         <hr>
@@ -436,90 +429,86 @@ $today = date('Y-m-d');
                                                                     <label class="form-label">Chalan No.</label>
 
                                                                     <input type="text" name="chalan_no[]"
-                                                                        class="form-control" placeholder="Chalan no">
-                                                                </div>
-                                                                <div class="col-6 mb-3">
-                                                                    <label class="form-label">Chalan Amount</label>
-                                                                    <input type="text" name="c_amount[]"
-                                                                        class="form-control c_amount"
-                                                                        placeholder="Chalan amount">
-                                                                </div>
+                                                             <div class="row chalan-row mb-3 align-items-end">
+                                                                 <div class="col-md-5 col-5 col-remove">
+                                                                     <label class="form-label">Chalan No.</label>
+                                                                     <select name="chalan_no[]" class="form-select chalan-select" required>
+                                                                         <option value="">-- Select Chalan No --</option>
+                                                                     </select>
+                                                                 </div>
+                                                                 <div class="col-md-5 col-5">
+                                                                     <label class="form-label">Chalan Amount</label>
+                                                                     <input type="text" name="c_amount[]" class="form-control c_amount" readonly>
+                                                                 </div>
+                                                                 <div class="col-md-2 col-2">
+                                                                     <button type="button" class="btn btn-danger btn-sm c_removeBtn">Remove</button>
+                                                                 </div>
+                                                             </div>
+                                                         </div>
 
-                                                            </div>
-                                                        </div>
+                                                         <div class="mb-3">
+                                                             <button type="button" id="addRow" class="btn btn-secondary btn-sm">+ Add Chalan Row</button>
+                                                         </div>
 
-                                                        <div class="mb-3">
+                                                         <hr>
 
-                                                            <div type="button" id="addRow">
-                                                                <span class="nav-text pr-2">+ Add New Row </span>
-                                                            </div>
+                                                         <div class="row">
+                                                             <div class="col-md-4 col-6 mb-3">
+                                                                 <label class="form-label"><b>Total Chalan Amount</b></label>
+                                                                 <input type="text" id="total_c_amount" name="total_c_amount"
+                                                                     class="form-control total_c_amount" value="0" readonly>
+                                                             </div>
 
-                                                        </div>
+                                                             <div class="col-md-4 col-6 mb-3">
+                                                                 <label class="form-label">Discount</label>
+                                                                 <select class="form-select" id="dis_rate" name="dis_rate">
+                                                                     <?php
+                                                                     for ($d = 1; $d <= 10; $d++) {
+                                                                         $sel = ($d == 5) ? 'selected' : '';
+                                                                         echo "<option value='{$d}' {$sel}>{$d}%</option>";
+                                                                     }
+                                                                     ?>
+                                                                 </select>
+                                                             </div>
 
-                                                        <hr>
+                                                             <div class="col-md-4 col-6 mb-3">
+                                                                 <label class="form-label">Discount Amount</label>
+                                                                 <input type="text" id="dis_amount" name="dis_amount"
+                                                                     class="form-control dis_amount" readonly>
+                                                             </div>
+                                                         </div>
 
-                                                        <!-- </div> -->
-                                                        <!-- </div> -->
+                                                         <div class="row">
+                                                             <div class="col-md-3 col-6 mb-3">
+                                                                 <label class="form-label">CGST Rate (%)</label>
+                                                                 <input type="number" step="0.01" id="cgst_rate" name="cgst_rate"
+                                                                     class="form-control cgst_rate"
+                                                                     value="2.50">
+                                                             </div>
+                                                             <div class="col-md-3 col-6 mb-3">
+                                                                 <label class="form-label">CGST Amount</label>
+                                                                 <input type="text" id="cgst" name="cgst"
+                                                                     class="form-control cgst" readonly>
+                                                             </div>
+                                                             <div class="col-md-3 col-6 mb-3">
+                                                                 <label class="form-label">SGST Rate (%)</label>
+                                                                 <input type="number" step="0.01" id="sgst_rate" name="sgst_rate"
+                                                                     class="form-control sgst_rate"
+                                                                     value="2.50">
+                                                             </div>
+                                                             <div class="col-md-3 col-6 mb-3">
+                                                                 <label class="form-label">SGST Amount</label>
+                                                                 <input type="text" id="sgst" name="sgst"
+                                                                     class="form-control sgst" readonly>
+                                                             </div>
+                                                         </div>
 
-
-                                                        <div class="row">
-
-                                                            <div class="col-md-4 col-6 mb-3">
-                                                                <label class="form-label"><b>Total Chalan
-                                                                        Amount</b></label>
-                                                                <input type="text" id="total_c_amount"
-                                                                    name="total_c_amount"
-                                                                    class="form-control total_c_amount" value="0"
-                                                                    readonly>
-                                                            </div>
-
-
-
-                                                            <input type="text" id="rate" hidden>
-
-
-                                                            <div class="col-md-4 col-6 mb-3">
-                                                                <label class="form-label">Discount</label>
-                                                                <select class="form-select" id="dis_rate"
-                                                                    name="dis_rate">
-                                                                    <option value="1%"> 1% </option>
-                                                                    <option value="2%"> 2% </option>
-                                                                    <option value="3%"> 3% </option>
-                                                                    <option value="4%"> 4% </option>
-                                                                    <option value="5%" selected> 5% </option>
-                                                                    <option value="6%"> 6% </option>
-                                                                    <option value="7%"> 7% </option>
-                                                                    <option value="8%"> 8% </option>
-                                                                    <option value="9%"> 9% </option>
-                                                                    <option value="10%"> 10% </option>
-                                                                </select>
-                                                            </div>
-
-                                                            <div class="col-md-4 col-6 mb-3">
-                                                                <label class="form-label">Discount Amount</label>
-                                                                <input type="text" id="dis_amount" name="dis_amount"
-                                                                    class="form-control dis_amount"
-                                                                    placeholder="Please select design no 2" readonly>
-                                                            </div>
-                                                            <div class="col-md-4 col-6 mb-3">
-                                                                <label class="form-label">CGST</label>
-                                                                <input type="text" id="cgst" name="cgst"
-                                                                    class="form-control cgst"
-                                                                    placeholder="Please select design no 2" readonly>
-                                                            </div>
-                                                            <div class="col-md-4 col-6 mb-3">
-                                                                <label class="form-label">SGST IGST</label>
-                                                                <input type="text" id="sgst" name="sgst"
-                                                                    class="form-control sgst"
-                                                                    placeholder="Please select design no 2" readonly>
-                                                            </div>
-
-                                                            <div class="col-md-4 col-6 mb-3">
-                                                                <label class="form-label">Total GST</label>
-                                                                <input type="text" id="totalgst" name="totalgst"
-                                                                    class="form-control totalgst"
-                                                                    placeholder="Please select design no 2" readonly>
-                                                            </div>
+                                                         <div class="row">
+                                                             <div class="col-md-4 col-6 mb-3">
+                                                                 <label class="form-label">Total GST</label>
+                                                                 <input type="text" id="totalgst" name="totalgst"
+                                                                     class="form-control totalgst" readonly>
+                                                             </div></div>
 
                                                         </div>
 

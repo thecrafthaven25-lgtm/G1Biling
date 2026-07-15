@@ -113,18 +113,23 @@ $id = $_GET['b_id'] ?? null;
                                     <td class="tm_width_3 tm_primary_color" style="color: #111 !important;">Discount (<?php echo htmlspecialchars($row1['d_rate']); ?>%):</td>
                                     <td class="tm_width_3 tm_primary_color tm_text_right" style="color: #111 !important;">- ₹ <?php echo htmlspecialchars($row1['d_amount']); ?></td>
                                 </tr>
-                                <tr>
-                                    <td class="tm_width_3 tm_primary_color" style="color: #111 !important;">CGST (2.5%):</td>
-                                    <td class="tm_width_3 tm_primary_color tm_text_right" style="color: #111 !important;">₹ <?php echo htmlspecialchars($row1['cgst']); ?></td>
-                                </tr>
-                                <tr>
-                                    <td class="tm_width_3 tm_primary_color" style="color: #111 !important;">SGST (2.5%):</td>
-                                    <td class="tm_width_3 tm_primary_color tm_text_right" style="color: #111 !important;">₹ <?php echo htmlspecialchars($row1['sgst']); ?></td>
-                                </tr>
-                                <tr>
-                                    <td class="tm_width_3 tm_primary_color tm_bold" style="color: #111 !important;">Total GST (5%):</td>
-                                    <td class="tm_width_3 tm_primary_color tm_bold tm_text_right" style="color: #111 !important;">₹ <?php echo htmlspecialchars($row1['total_gst']); ?></td>
-                                </tr>
+                                 <?php
+                                 $cgst_rate_val = isset($row1['cgst_rate']) ? (float)$row1['cgst_rate'] : 2.5;
+                                 $sgst_rate_val = isset($row1['sgst_rate']) ? (float)$row1['sgst_rate'] : 2.5;
+                                 $total_gst_rate_val = $cgst_rate_val + $sgst_rate_val;
+                                 ?>
+                                 <tr>
+                                     <td class="tm_width_3 tm_primary_color" style="color: #111 !important;">CGST (<?php echo htmlspecialchars($cgst_rate_val); ?>%):</td>
+                                     <td class="tm_width_3 tm_primary_color tm_text_right" style="color: #111 !important;">₹ <?php echo htmlspecialchars($row1['cgst']); ?></td>
+                                 </tr>
+                                 <tr>
+                                     <td class="tm_width_3 tm_primary_color" style="color: #111 !important;">SGST (<?php echo htmlspecialchars($sgst_rate_val); ?>%):</td>
+                                     <td class="tm_width_3 tm_primary_color tm_text_right" style="color: #111 !important;">₹ <?php echo htmlspecialchars($row1['sgst']); ?></td>
+                                 </tr>
+                                 <tr>
+                                     <td class="tm_width_3 tm_primary_color tm_bold" style="color: #111 !important;">Total GST (<?php echo htmlspecialchars($total_gst_rate_val); ?>%):</td>
+                                     <td class="tm_width_3 tm_primary_color tm_bold tm_text_right" style="color: #111 !important;">₹ <?php echo htmlspecialchars($row1['total_gst']); ?></td>
+                                 </tr>
                                 <tr class="tm_accent_bg">
                                     <td class="tm_width_3 tm_bold tm_f16 tm_white_color">Final Amount:</td>
                                     <td class="tm_width_3 tm_bold tm_f16 tm_white_color tm_text_right">₹ <?php echo htmlspecialchars($row1['total_amount']); ?></td>
